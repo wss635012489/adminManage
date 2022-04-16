@@ -31,13 +31,13 @@
           text-color="#fff"
           :default-active="route.path"
         >
-          <el-menu-item index="/order">
+          <el-menu-item
+            :index="item.path"
+            v-for="item in routerData"
+            :key="item.path"
+          >
             <el-icon><setting /></el-icon>
-            <span>订单列表</span>
-          </el-menu-item>
-          <el-menu-item index="/user">
-            <el-icon><setting /></el-icon>
-            <span>用户列表</span>
+            <span>{{ item.meta.title }}</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -59,9 +59,12 @@ export default defineComponent({
     let router = useRouter()
     let route = useRoute()
     let userName = computed(() => store.state.userInfo.userName)
-    let state = {}
-
+    let state = {
+      routerData: computed(() => store.state.routerData),
+    }
+    console.log(state.routerData)
     const loginOut = () => {
+      store.commit('SET_TOKEN', '')
       router.replace('/login')
     }
     return {

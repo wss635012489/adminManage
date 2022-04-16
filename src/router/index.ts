@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import store from "../store"
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -6,18 +7,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'index',
     component: () => import(/* webpackChunkName: "index" */ '../views/index/index.vue'),
-    children:[
-      {
-        path: 'user',
-        name: 'user',
-        component: () => import(/* webpackChunkName: "user" */ '../views/user/index.vue')
-      },
-      {
-        path: 'order',
-        name: 'order',
-        component: () => import(/* webpackChunkName: "order" */ '../views/order/index.vue')
-      }
-    ]
   },
   {
     path: '/login',
@@ -31,4 +20,30 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach((to,from,next) => {
+  const token = store.state.token
+  if(router.getRoutes().length == 2){
+    let arr = store.state.routerData
+    arr.forEach(item => {
+      router.addRoute('index',{
+        path: item.path,
+        name: item.name,
+        component: () => import(/* webpackChunkName: "[requst]" */ `../views/${item.name}/index.vue`)
+      })
+    })
+  }
+
+  if(!token && to.name != 'login'){
+    next('/login')
+  }else if(token && to.name == 'login'){
+    next('/')
+  }
+  if(to.name == 'index'){
+    next(store.state.routerData[0].path)
+  }
+  if(!to.matched.length){//解决刷新后空白
+    router.replace(to.path)
+  }
+  next()
+})
 export default router

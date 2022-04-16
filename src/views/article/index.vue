@@ -11,9 +11,7 @@
     </div>
     <el-table v-loading="loading" :data="list" border style="width: 100%">
       <el-table-column type="index" width="180" />
-      <el-table-column prop="name" label="姓名" />
-      <el-table-column prop="phone" label="手机号" />
-      <el-table-column prop="email" label="email" />
+      <el-table-column prop="title" label="标题" />
       <el-table-column>
         <template #default="scope">
           <div class="btn-box">
@@ -28,74 +26,65 @@
       <el-pagination
         layout="total, prev, pager, next, jumper"
         :total="listBase.length"
+        @current-change="pageChange"
       />
     </div>
   </div>
   <el-dialog v-model="dialogVisible" title="详情" width="30%">
-    <ul class="detail-info">
-      <li><label>姓名</label>：{{ detail.name }}</li>
-      <li><label>电话</label>：{{ detail.phone }}</li>
-      <li><label>email</label>：{{ detail.email }}</li>
-      <li><label>website</label>：{{ detail.website }}</li>
-      <li><label>地址</label>：{{ detail.address.street }}</li>
-    </ul>
+    <p>
+      {{ detail.body }}
+    </p>
   </el-dialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, reactive, toRefs, watch } from 'vue'
-import { getUer, getUerDetail } from '@a/index'
-import { State } from '@t/userTypes'
+import { getPosts } from '@a/index'
+import { State } from '@t/articleTypes'
+import { ElMessage } from 'element-plus'
 export default defineComponent({
   setup() {
     let state: State = reactive({
       list: [],
       listBase: [],
-      search: '',
       loading: false,
       dialogVisible: false,
       detail: '',
+      pageNo: 1,
     })
     onMounted(() => {
       state.loading = true
-      getUer().then((res) => {
-        //console.log(res)
+      getPosts().then((res) => {
+        // console.log(res)
         state.loading = false
-        state.list = res
         state.listBase = res
+        sliceList()
       })
     })
-    watch(
-      () => state.search,
-      (newVal) => {
-        console.log(newVal)
-        if (!newVal) {
-          state.list = state.listBase
-        }
-      }
-    )
-    const goSearch = () => {
-      if (state.search) {
-        state.list = state.listBase.filter(
-          (item: any) => item.name.indexOf(state.search) != -1
-        )
-      } else {
-        state.list = state.listBase
-      }
-    }
     const handleSee = (data: any) => {
-      //console.log(data)
+      //console.log(data.body)
       state.dialogVisible = false
-      getUerDetail(data.id).then((res) => {
-        //console.log(res)
-        state.detail = res
-        state.dialogVisible = true
-      })
+      state.detail = data
+      state.dialogVisible = true
+    }
+    const sliceList = () => {
+      state.list = state.listBase.slice(
+        (state.pageNo - 1) * 10,
+        state.pageNo * 10
+      )
+    }
+    const pageChange = (page: number) => {
+      state.pageNo = page
+      sliceList()
+    }
+    const goSearch = () => {
+      ElMessage.success('搜索成功')
     }
     return {
       ...toRefs(state),
-      goSearch,
       handleSee,
+      pageChange,
+      goSearch,
     }
   },
 })
@@ -127,5 +116,8 @@ export default defineComponent({
       color: #999;
     }
   }
+}
+p {
+  line-height: 2.2;
 }
 </style>

@@ -70,12 +70,18 @@ export default defineComponent({
       if (!formEl) return
       await formEl.validate((valid) => {
         if (valid) {
-          login<RuleForm, ResUserInfo>(state.ruleForm).then((res) => {
-            //console.log(res)
-            store.commit('SET_TOKEN', res.token)
-            store.commit('SET_USERINFO', res)
-            router.replace('/')
+          // login<RuleForm, ResUserInfo>(state.ruleForm).then((res) => {
+          //   //console.log(res)
+          //   store.commit('SET_TOKEN', res.token)
+          //   store.commit('SET_USERINFO', res)
+
+          // })
+          store.commit('SET_TOKEN', '1234')
+          store.commit('SET_USERINFO', {
+            userName: '我是一只小叮当',
+            token: '1234',
           })
+          router.replace('/')
         }
       })
     }
@@ -92,7 +98,7 @@ export default defineComponent({
 .login-box {
   width: 100%;
   height: 100%;
-  background: url('~@img/login_bg.jpg') no-repeat;
+  background: url('~@img/login_bg.jpg');
   background-size: 100%;
   display: flex;
   justify-content: center;

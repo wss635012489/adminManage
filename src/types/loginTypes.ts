@@ -8,6 +8,6 @@ export interface State {
 }
 export interface ResUserInfo {
   token:string
-  authority:Router[]
+  authority?:Router[]
   userName:string
 }

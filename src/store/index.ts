@@ -1,18 +1,37 @@
 import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
+import {State} from './stateTypes'
 import {ResUserInfo} from '@t/loginTypes'
 
-interface State {
-  token:string
-  userInfo:ResUserInfo
-}
+
+
 let state:State = {
   token:'',
   userInfo:{
     userName:'',
     token:'',
-    authority:[]
-  }
+    //authority:[]
+  },
+  routerData:[{
+    path:'/user',
+    name:'user',
+    meta: { 
+      title:'用户列表'
+     }
+  },{
+    path:'/article',
+    name:'article',
+    meta: { 
+      title:'文章列表'
+     }
+  },
+  {
+    path:'/map',
+    name:'map',
+    meta: { 
+      title:'地图'
+     }
+  }]
 }
 //const storage:Storage = window.sessionStorage
 export default createStore({
